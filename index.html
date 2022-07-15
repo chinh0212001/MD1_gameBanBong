@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>game bắn bóng gạch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style type="text/css">
+        canvas {
+            border: 1px solid;
+            margin: 0 auto;
+            width: 800px;
+            display: block;
+            margin-top: 50px;
+            background-color: #FFCC99
+        ;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas" height="600px" width="800px"></canvas>
+<script type="text/javascript">
+
+    let amthanh = new Audio("audio/nhac.mp3")
+    let canvas = document.getElementById('gameCanvas');
+    let ctx = canvas.getContext('2d');
+    let bong = 13,
+        x = canvas.width / 2,
+        y = canvas.height -20,
+        dx = 3,
+        dy = -3,
+        pongH = 15,
+        pongW = 150,
+        pongX = (canvas.width - pongW) / 2,
+        rightKey = false,
+        leftKey = false,
+        brickRows = 5,
+        brickCol = 9,
+        brickW = 75,
+        brickH = 22,
+        brickPadding = 12,
+        brickOffsetTop =45,
+        brickOffsetLeft = 15; // căn gạch ngang
+    let bricks = [];
+    for (let i = 0; i < brickCol; i++) {
+        for (let j = 0; j < brickRows; j++) {
+            bricks.push({
+                x: (i * (brickW + brickPadding)) + brickOffsetLeft,
+                y: (j * (brickH + brickPadding)) + brickOffsetTop,
+                status: 1
+            });
+        }
+    }
+
+    function veBong() {
+        ctx.beginPath();
+        ctx.arc(x, y, bong, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function vePong() {
+        ctx.beginPath();
+        ctx.rect(pongX, canvas.height - pongH, pongW, pongH);
+        ctx.fillStyle = "#003f32";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function veGach() {
+        bricks.forEach(function (brick) {
+            // console.log('status ======== ', brick.status)
+            if (!brick.status){
+                return;
+            }
+            ctx.beginPath();
+            ctx.rect(brick.x, brick.y, brickW, brickH);
+            ctx.fillStyle = "#FF6600";
+            ctx.fill();
+            ctx.closePath();
+        });
+
+    }
+    let score = 0;
+    let count =0;
+    function vaCham() {
+if(count==bricks.length){
+    alert('chúc mừng em đã có được tôi !!!')
+}
+        bricks.forEach(function (b) {
+            if (!b.status)
+                return;
+            let bricksColumn = x > b.x && x < b.x + brickW,
+                bricksRow = y > b.y && y < b.y + brickH;
+            if (bricksColumn && bricksRow) {
+                dy = -dy
+                b.status = 0;
+                count++;
+                score++;
+                console.log('count === ', count)
+            }
+        });
+    }
+    function veScore(){
+        ctx.font = "bold 20px black, sans-serif"
+        ctx.fillStyle = "#FFFFFF"
+        ctx.fillText("Score : "+ score,10,30);
+
+
+
+    }
+    function ve() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        amthanh.play()
+        veGach();
+        veBong();
+        vePong();
+        vaCham();
+        veScore();
+
+        if (hitSideWall()) {
+            dx = -dx;
+        } else if (hitTop() || hitPong()) {
+            dy = -dy;
+        }
+        else if (gameOver()) {
+            xOutOfBounds();
+            amthanh.pause()
+            alert('xin lỗi em không xứng đáng với tôi !!!')
+            clearInterval(a)
+        }
+        let RIGHT_ARROW = 39
+        let lEFT_ARROW = 37
+
+        function hitPong() {
+            return hitBotton() && ballOverPong();
+        }
+
+        function ballOverPong() {
+            return x > pongX && x < pongX + pongW;
+        }
+
+        function hitBotton() {
+            return y + dy > canvas.height - bong;
+        }
+
+        function gameOver() {
+            return hitBotton() && !ballOverPong();
+        }
+
+        function hitSideWall() {
+            return x + dx > canvas.width - bong || x + dx < bong;
+        }
+
+        function hitTop() {
+            return y + dy < bong;
+        }
+
+        function xOutOfBounds() {
+            return x + dx > canvas.width - bong || x + dx < bong;
+        }
+
+        function rightPressed(e) {
+            return e.keyCode == RIGHT_ARROW;
+        }
+
+        function leftPressed(e) {
+            return e.keyCode == lEFT_ARROW;
+        }
+
+        function keyDown(e) {
+            rightKey = rightPressed(e)
+            leftKey = leftPressed(e)
+        }
+
+        function keyUp(e) {
+            rightKey = rightPressed(e) ? false : rightKey;
+            leftKey = leftPressed(e) ? false : leftKey;
+        }
+        function startGame(){
+        }
+
+
+        document.addEventListener("keydown", keyDown, false);
+        document.addEventListener("keyup", keyUp, false);
+        let maxX = canvas.width - pongW
+        let minX = 0;
+        let pongDelta = rightKey ? 7 : leftKey ? -7 : 0;
+        pongX = pongX + pongDelta;
+        pongX = Math.min(pongX, maxX);
+        pongX = Math.max(pongX, minX);
+        x += dx;
+        y += dy;
+    }
+
+    let a = setInterval(ve, 10)
+
+
+
+</script>
+</body>
+</html>
