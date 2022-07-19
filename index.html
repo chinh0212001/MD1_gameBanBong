@@ -25,22 +25,22 @@
     let amthanh = new Audio("audio/nhac.mp3")
     let canvas = document.getElementById('gameCanvas');
     let ctx = canvas.getContext('2d');
-    let bong = 13,
+    let bong = 10,
         x = canvas.width / 2,
         y = canvas.height -20,
         dx = 3,
         dy = -3,
-        pongH = 15,
-        pongW = 150,
-        pongX = (canvas.width - pongW) / 2,
+        pongH = 15,//độ dày thanh pong
+        pongW = 150,//chìu dài thanh pong
+        pongX = (canvas.width - pongW) / 2,//vị trí thanh pong
         rightKey = false,
         leftKey = false,
-        brickRows = 5,
-        brickCol = 9,
-        brickW = 75,
-        brickH = 22,
-        brickPadding = 12,
-        brickOffsetTop =45,
+        brickRows = 5,// hàng gạch
+        brickCol = 9,//số viên gạch 1 hàng
+        brickW = 75,//độ dài của gạch
+        brickH = 22,//độ dày của gạch
+        brickPadding = 12,// khoảng cách của các viên gạch
+        brickOffsetTop =45,// căn gạch
         brickOffsetLeft = 15; // căn gạch ngang
     let bricks = [];
     for (let i = 0; i < brickCol; i++) {
@@ -89,12 +89,14 @@
         if(count==bricks.length){
             alert('chúc mừng em đã có được tôi !!!')
             return;
+
         }
         bricks.forEach(function (b) {
             if (!b.status)
                 return;
             let bricksColumn = x > b.x && x < b.x + brickW,
                 bricksRow = y > b.y && y < b.y + brickH;
+            console.log('bricksColumn', bricksColumn)
             if (bricksColumn && bricksRow) {
                 dy = -dy
                 b.status = 0;
@@ -118,7 +120,7 @@
         vaCham();
         veScore();
 
-        if (hitSideWall()) {
+        if (hitSideWall()) {//va vào tường bên
             dx = -dx;
         } else if (hitTop() || hitPong()) {
             dy = -dy;
@@ -160,7 +162,7 @@
             return x + dx > canvas.width - bong || x + dx < bong;
         }
 
-        function rightPressed(e) {
+        function rightPressed(e) {//bắt sự kiện bàn phím
             return e.keyCode == RIGHT_ARROW;
         }
 
@@ -171,15 +173,13 @@
         function keyDown(e) {
             rightKey = rightPressed(e)
             leftKey = leftPressed(e)
+
         }
 
         function keyUp(e) {
             rightKey = rightPressed(e) ? false : rightKey;
             leftKey = leftPressed(e) ? false : leftKey;
         }
-        function startGame(){
-        }
-
 
         document.addEventListener("keydown", keyDown, false);
         document.addEventListener("keyup", keyUp, false);
@@ -189,7 +189,7 @@
         pongX = pongX + pongDelta;
         pongX = Math.min(pongX, maxX);
         pongX = Math.max(pongX, minX);
-        x += dx;
+        x += dx;//di chuyen bong
         y += dy;
     }
 
